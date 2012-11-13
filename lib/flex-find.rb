@@ -1,0 +1,5 @@
+require 'flex'
+require 'flex/scoped'
+require 'flex/finders/methods'
+require 'flex/finders'
+require 'flex/find'
