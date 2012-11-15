@@ -14,15 +14,9 @@ module Flex
       #      #=> [#<MyModel ... color: "red", size: "small">, #<MyModel ... color: "bue", size: "small">]
       #
       def find(ids, vars={})
-        variables = flex.variables.deep_merge(vars)
-        ensure_single :index, variables
-        ensure_single :type,  variables
-        result = if ids.is_a?(Array)
-                   Flex.multi_get flex.variables.deep_merge({:ids => ids}, variables)
-                 else
-                   Flex.get flex.variables.deep_merge({:id => ids}, variables)
-                 end
-        flex_result(result, vars)
+        wrapped = [ids] unless ids.is_a?(Array)
+        result = Find.ids(flex.variables.deep_merge(vars, :ids => wrapped))
+        ids.is_a?(Array) ? result : result.first
       end
 
 
@@ -95,13 +89,6 @@ module Flex
         else
           scopes << name
         end
-      end
-
-    private
-
-      def ensure_single(key, variables)
-        raise Finders::Error, "Multiple :#{key} #{variables[:key].inspect} detected. Please, pass a single :#{key} variable. E.g. find(id, :#{key} => my_#{key})" \
-              if variables[key].is_a?(Array) && (variables[key].size > 1) || variables[key] =~ /,/
       end
 
     end

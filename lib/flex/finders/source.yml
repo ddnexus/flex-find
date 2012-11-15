@@ -11,3 +11,8 @@ with_scope:
       - <<_missing_fields= ~ >>
       - <<filters= ~ >>
   sort: <<sort= ~ >>
+
+ids:
+- query:
+    terms:
+      _id: <<ids>>

@@ -54,12 +54,16 @@ module Flex
 
     # sets the :from param so it will return the nth page of size :size
     def page(value)
-      deep_merge :params => {:page => value}
+      deep_merge :params => {:page => value||1}
     end
 
     # the standard :params variable
     def params(value)
       deep_merge :params => value
+    end
+
+    def find(id_or_ids)
+      @host_class.find id_or_ids, self
     end
 
     # it limits the size of the query to the first document and returns it as a single document object
