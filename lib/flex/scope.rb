@@ -1,5 +1,5 @@
 module Flex
-  class Scoped < Hash
+  class Scope < Hash
 
     METHODS = [:terms, :filters, :sort, :fields, :size, :page, :params,
                :first, :last, :all, :scan_all, :count]

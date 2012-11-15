@@ -2,7 +2,7 @@ module Flex
   module Finders
     module Methods
 
-      METHODS = [:find, :scoped, :scope] + Scoped::METHODS
+      METHODS = [:find, :scoped, :scope] + Scope::METHODS
 
       #    MyModel.find(ids, vars={})
       #    - ids can be a single id or an array of ids
@@ -20,9 +20,9 @@ module Flex
       end
 
 
-      #    scoped methods. They returns a Scoped object similar to AR.
+      #    Scope methods. They returns a Scope object similar to AR.
       #    You can chain scopes, then you can call :count, :first, :all and :scan_all to get your result
-      #    See Flex::Persistence::Scoped
+      #    See Flex::Scope
       #
       #    scoped = MyModel.terms(:field_one => 'something', :field_two => nil)
       #                    .sort(:field_three => :desc)
@@ -41,12 +41,12 @@ module Flex
       Utils.define_delegation :to  => :scoped,
                               :in  => self,
                               :by  => :module_eval,
-                              :for => Scoped::METHODS
+                              :for => Scope::METHODS
 
 
-      # You can start with a non restricted Flex::Persistence::Scoped object
+      # You can start with a non restricted Flex::Scope object
       def scoped
-        Scoped.new(self)
+        Scope.new(self)
       end
 
 
@@ -64,25 +64,25 @@ module Flex
       #    MyModel.red.all
       #    MyModel.size('small').red.all
       #
-      def scope(name, scoped=nil, &block)
+      def scope(name, scope=nil, &block)
         raise ArgumentError, "Dangerous scope name: a :#{name} method is already defined. Please, use another one." \
               if respond_to?(name)
         proc = case
                when block_given?
                  block
-               when scoped.is_a?(Scoped)
-                 lambda {scoped}
-               when scoped.is_a?(Proc)
-                 scoped
+               when scope.is_a?(Scope)
+                 lambda {scope}
+               when scope.is_a?(Proc)
+                 scope
                else
-                 raise ArgumentError, "Scoped object or Proc expected (got #{scoped.inspect})"
+                 raise ArgumentError, "Scope object or Proc expected (got #{scope.inspect})"
                end
         metaclass = class << self; self end
         metaclass.send(:define_method, name) do |*args|
-          scoped = proc.call(*args)
-          raise Scoped::Error, "The scope :#{name} does not return a Flex::Scoped object" \
-                unless scoped.is_a?(Scoped)
-          scoped
+          scope = proc.call(*args)
+          raise Scope::Error, "The scope :#{name} does not return a Flex::Scope object" \
+                unless scope.is_a?(Scope)
+          scope
         end
         if is_a?(Module)
           flex.scopes << name
