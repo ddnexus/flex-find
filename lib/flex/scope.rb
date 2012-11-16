@@ -2,7 +2,7 @@ module Flex
   class Scope < Hash
 
     METHODS = [:terms, :filters, :sort, :fields, :size, :page, :params,
-               :first, :last, :all, :scan_all, :count]
+               :find, :first, :last, :all, :scan_all, :count]
 
     class Error < StandardError; end
 
@@ -62,8 +62,19 @@ module Flex
       deep_merge :params => value
     end
 
-    def find(id_or_ids)
-      @host_class.find id_or_ids, self
+    #    MyModel.find(ids, vars={})
+    #    - ids can be a single id or an array of ids
+    #
+    #    MyModel.find '1Momf4s0QViv-yc7wjaDCA'
+    #      #=> #<MyModel ... color: "red", size: "small">
+    #
+    #    MyModel.find ['1Momf4s0QViv-yc7wjaDCA', 'BFdIETdNQv-CuCxG_y2r8g']
+    #      #=> [#<MyModel ... color: "red", size: "small">, #<MyModel ... color: "bue", size: "small">]
+    #
+    def find(ids, vars={})
+      wrapped = [ids] unless ids.is_a?(Array)
+      result  = Find.ids deep_merge(vars, :ids => wrapped)
+      ids.is_a?(Array) ? result : result.first
     end
 
     # it limits the size of the query to the first document and returns it as a single document object

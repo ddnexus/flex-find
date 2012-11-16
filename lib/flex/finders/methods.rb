@@ -2,24 +2,6 @@ module Flex
   module Finders
     module Methods
 
-      METHODS = [:find, :scoped, :scope] + Scope::METHODS
-
-      #    MyModel.find(ids, vars={})
-      #    - ids can be a single id or an array of ids
-      #
-      #    MyModel.find '1Momf4s0QViv-yc7wjaDCA'
-      #      #=> #<MyModel ... color: "red", size: "small">
-      #
-      #    MyModel.find ['1Momf4s0QViv-yc7wjaDCA', 'BFdIETdNQv-CuCxG_y2r8g']
-      #      #=> [#<MyModel ... color: "red", size: "small">, #<MyModel ... color: "bue", size: "small">]
-      #
-      def find(ids, vars={})
-        wrapped = [ids] unless ids.is_a?(Array)
-        result = Find.ids(flex.variables.deep_merge(vars, :ids => wrapped))
-        ids.is_a?(Array) ? result : result.first
-      end
-
-
       #    Scope methods. They returns a Scope object similar to AR.
       #    You can chain scopes, then you can call :count, :first, :all and :scan_all to get your result
       #    See Flex::Scope
@@ -80,15 +62,11 @@ module Flex
         metaclass = class << self; self end
         metaclass.send(:define_method, name) do |*args|
           scope = proc.call(*args)
-          raise Scope::Error, "The scope :#{name} does not return a Flex::Scope object" \
+          raise Scope::Error, "The scope :#{name} does not return a Flex::Scope object (got #{scope.inspect})" \
                 unless scope.is_a?(Scope)
           scope
         end
-        if is_a?(Module)
-          flex.scopes << name
-        else
-          scopes << name
-        end
+        (is_a?(Module) ? flex.scopes : scopes) << name
       end
 
     end
