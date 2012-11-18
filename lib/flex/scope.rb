@@ -54,7 +54,7 @@ module Flex
 
     # sets the :from param so it will return the nth page of size :size
     def page(value)
-      deep_merge :params => {:page => value||1}
+      deep_merge :page => value || 1
     end
 
     # the standard :params variable
@@ -126,7 +126,7 @@ module Flex
     private
 
     def array_value(value)
-      value.first if value.first.is_a?(Array) && value.size == 1
+      value.first.is_a?(Array) && value.size == 1 ? value.first : value
     end
 
   end
