@@ -110,20 +110,37 @@ module Flex
       result['hits']['total']
     end
 
+    def render(template, vars={})
+      @host_class.send(template, deep_merge(vars))
+    end
+
     def inspect
       "#<#{self.class.name} #{self}>"
     end
 
     def respond_to?(meth, private=false)
-      super || @host_class.flex.scopes.include?(meth.to_sym)
+      super || is_template?(meth) || is_scope?(meth)
     end
 
     def method_missing(meth, *args, &block)
       super unless respond_to?(meth)
-      deep_merge @host_class.send(meth, *args)
+      case
+      when is_scope?(meth)
+        deep_merge @host_class.send(meth, *args)
+      when is_template?(meth)
+        @host_class.send(meth, deep_merge(args.first), &block)
+      end
     end
 
     private
+
+    def is_template?(name)
+      @host_class.flex.templates.has_key?(name.to_sym)
+    end
+
+    def is_scope?(name)
+      @host_class.flex.scopes.include?(name.to_sym)
+    end
 
     def array_value(value)
       value.first.is_a?(Array) && value.size == 1 ? value.first : value
