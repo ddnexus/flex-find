@@ -28,7 +28,7 @@ module Flex
 
       # You can start with a non restricted Flex::Scope object
       def scoped
-        Scope.new(self)
+        @scoped ||= Scope.new respond_to?(:flex) ? self : eval(self.name.sub(/::[^:]+$/, ''))
       end
 
 
@@ -66,7 +66,7 @@ module Flex
                 unless scope.is_a?(Scope)
           scope
         end
-        (is_a?(Module) ? flex.scopes : scopes) << name
+        scopes << name
       end
 
     end

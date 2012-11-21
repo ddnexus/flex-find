@@ -4,7 +4,8 @@ _missing_fields:
 
 with_scope:
 - query:
-    match_all: {}
+    query_string:
+      query: <<query= '*' >>
   filter:
     and:
       - term: <<terms= ~ >>

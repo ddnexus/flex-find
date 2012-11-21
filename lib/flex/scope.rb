@@ -1,7 +1,7 @@
 module Flex
   class Scope < Hash
 
-    METHODS = [:terms, :filters, :sort, :fields, :size, :page, :params,
+    METHODS = [:query, :terms, :filters, :sort, :fields, :size, :page, :params,
                :find, :first, :last, :all, :scan_all, :count]
 
     class Error < StandardError; end
@@ -9,14 +9,13 @@ module Flex
     include Structure::Mergeable
 
     # never instantiate this object directly: it is automatically done by the scoped method
-    def initialize(proxy)
-      if proxy.is_a?(Module)
-        @host_class = proxy
-        replace proxy.flex.variables
-      else
-        @host_class = proxy.host_class
-        replace proxy.variables
-      end
+    def initialize(host_class)
+      @host_class = host_class
+      replace host_class.flex.variables
+    end
+
+    def query(string)
+      deep_merge :query => string
     end
 
     # accepts also :any_term => nil for missing values
@@ -72,8 +71,10 @@ module Flex
     #      #=> [#<MyModel ... color: "red", size: "small">, #<MyModel ... color: "bue", size: "small">]
     #
     def find(ids, vars={})
-      wrapped = [ids] unless ids.is_a?(Array)
-      result  = Find.ids deep_merge(vars, :ids => wrapped)
+      wrapped = ids.is_a?(Array) ? ids : [ids]
+      raise ArgumentError, "Empty argument passed (got #{ids.inspect})" \
+            if wrapped.empty?
+      result = Find.ids deep_merge(vars, :ids => wrapped)
       ids.is_a?(Array) ? result : result.first
     end
 
@@ -110,10 +111,6 @@ module Flex
       result['hits']['total']
     end
 
-    def render(template, vars={})
-      @host_class.send(template, deep_merge(vars))
-    end
-
     def inspect
       "#<#{self.class.name} #{self}>"
     end
@@ -135,11 +132,11 @@ module Flex
     private
 
     def is_template?(name)
-      @host_class.flex.templates.has_key?(name.to_sym)
+      @host_class.flex.respond_to?(:template) &&  @host_class.flex.templates.has_key?(name.to_sym)
     end
 
     def is_scope?(name)
-      @host_class.flex.scopes.include?(name.to_sym)
+      @host_class.scopes.include?(name.to_sym)
     end
 
     def array_value(value)
