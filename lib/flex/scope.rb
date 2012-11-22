@@ -9,9 +9,8 @@ module Flex
     include Structure::Mergeable
 
     # never instantiate this object directly: it is automatically done by the scoped method
-    def initialize(host_class)
-      @host_class = host_class
-      replace host_class.flex.variables
+    def initialize(context)
+      self[:context] = context
     end
 
     def query(string)
@@ -123,20 +122,20 @@ module Flex
       super unless respond_to?(meth)
       case
       when is_scope?(meth)
-        deep_merge @host_class.send(meth, *args)
+        deep_merge self[:context].send(meth, *args)
       when is_template?(meth)
-        @host_class.send(meth, deep_merge(args.first), &block)
+        self[:context].send(meth, deep_merge(args.first), &block)
       end
     end
 
     private
 
     def is_template?(name)
-      @host_class.flex.respond_to?(:template) &&  @host_class.flex.templates.has_key?(name.to_sym)
+      self[:context].flex.respond_to?(:template) &&  self[:context].flex.templates.has_key?(name.to_sym)
     end
 
     def is_scope?(name)
-      @host_class.scopes.include?(name.to_sym)
+      self[:context].scopes.include?(name.to_sym)
     end
 
     def array_value(value)
