@@ -109,7 +109,7 @@ module Flex
     # performs a count search on the scope
     def count(vars={})
       variables = deep_merge(vars)
-      result = Find::With.flex.count_search(:scope, variables)
+      result    = Find::With.flex.count_search(:scope, variables)
       result['hits']['total']
     end
 
@@ -134,7 +134,7 @@ module Flex
     private
 
     def is_template?(name)
-      self[:context].flex.respond_to?(:template) &&  self[:context].flex.templates.has_key?(name.to_sym)
+      self[:context].flex.respond_to?(:templates) && self[:context].flex.templates.has_key?(name.to_sym)
     end
 
     def is_scope?(name)
