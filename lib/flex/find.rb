@@ -3,9 +3,10 @@ module Flex
 
     class Error < StandardError; end
 
-    def self.included(host_class)
-      host_class.class_eval do
-        @flex ||= ClassProxy::Base.new(host_class)
+    def self.included(context)
+      context.class_eval do
+        @flex ||= ClassProxy::Base.new(context)
+        @flex.extend(ClassProxy::IndexType) # used to add index and type to Loader only classes
         def self.flex; @flex end
 
         extend Methods
