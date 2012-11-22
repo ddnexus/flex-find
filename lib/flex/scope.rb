@@ -108,7 +108,8 @@ module Flex
 
     # performs a count search on the scope
     def count(vars={})
-      result = Find::With.scope deep_merge({:params => {:search_type => 'count'}, :raw_result => true}, vars)
+      variables = deep_merge(vars)
+      result = Find::With.flex.count_search(:scope, variables)
       result['hits']['total']
     end
 
