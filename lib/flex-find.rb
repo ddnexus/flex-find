@@ -1,5 +1,5 @@
 require 'flex'
 require 'flex/scope'
-require 'flex/finders/methods'
-require 'flex/finders'
+require 'flex/find/methods'
+require 'flex/find/with'
 require 'flex/find'

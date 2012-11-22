@@ -2,7 +2,7 @@ _missing_fields:
   missing:
     field: <<missing>>
 
-with_scope:
+scope:
 - query:
     query_string:
       query: <<query= '*' >>

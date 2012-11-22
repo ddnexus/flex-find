@@ -73,27 +73,27 @@ module Flex
       wrapped = ids.is_a?(Array) ? ids : [ids]
       raise ArgumentError, "Empty argument passed (got #{ids.inspect})" \
             if wrapped.empty?
-      result = Find.ids deep_merge(vars, :ids => wrapped)
+      result = Find::With.ids deep_merge(vars, :ids => wrapped)
       ids.is_a?(Array) ? result : result.first
     end
 
     # it limits the size of the query to the first document and returns it as a single document object
     def first(vars={})
       variables = params(:size => 1).deep_merge(vars)
-      Find.with_scope(variables).first
+      Find::With.scope(variables).first
     end
 
     # it limits the size of the query to the last document and returns it as a single document object
     def last(vars={})
       variables = params(:from => count-1, :size => 1).deep_merge(vars)
-      Find.with_scope(variables).first
+      Find::With.scope(variables).first
     end
 
     # will retrieve all documents, the results will be limited by the default :size param
     # use #scan_all if you want to really retrieve all documents (in batches)
     def all(vars={})
       variables = deep_merge(vars)
-      Find.with_scope variables
+      Find::With.scope variables
     end
 
     # scan_search: the block will be yielded many times with an array of batched results.
@@ -101,12 +101,12 @@ module Flex
     # See http://www.elasticsearch.org/guide/reference/api/search/scroll.html
     def scan_all(vars={}, &block)
       variables = deep_merge(vars)
-      Find.flex.scan_search(:with_scope, variables, &block)
+      Find::With.flex.scan_search(:scope, variables, &block)
     end
 
     # performs a count search on the scope
     def count(vars={})
-      result = Find.with_scope deep_merge({:params => {:search_type => 'count'}, :raw_result => true}, vars)
+      result = Find::With.scope deep_merge({:params => {:search_type => 'count'}, :raw_result => true}, vars)
       result['hits']['total']
     end
 

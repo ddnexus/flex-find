@@ -1,5 +1,5 @@
 module Flex
-  module Finders
+  module Find
     module Methods
 
       #    Scope methods. They returns a Scope object similar to AR.
