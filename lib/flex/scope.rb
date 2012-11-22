@@ -74,19 +74,21 @@ module Flex
       raise ArgumentError, "Empty argument passed (got #{ids.inspect})" \
             if wrapped.empty?
       result = Find::With.ids deep_merge(vars, :ids => wrapped)
-      ids.is_a?(Array) ? result : result.first
+      ids.is_a?(Array) || result.variables[:raw_result] ? result : result.first
     end
 
     # it limits the size of the query to the first document and returns it as a single document object
     def first(vars={})
       variables = params(:size => 1).deep_merge(vars)
-      Find::With.scope(variables).first
+      result = Find::With.scope(variables)
+      result.variables[:raw_result] ? result : result.first
     end
 
     # it limits the size of the query to the last document and returns it as a single document object
     def last(vars={})
       variables = params(:from => count-1, :size => 1).deep_merge(vars)
-      Find::With.scope(variables).first
+      result = Find::With.scope(variables)
+      result.variables[:raw_result] ? result : result.first
     end
 
     # will retrieve all documents, the results will be limited by the default :size param
