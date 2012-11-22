@@ -28,7 +28,7 @@ module Flex
 
       # You can start with a non restricted Flex::Scope object
       def scoped
-        @scoped ||= Scope.new respond_to?(:flex) ? self : eval(self.name.sub(/::[^:]+$/, ''))
+        @scoped ||= Scope.new flex.context
       end
 
 
