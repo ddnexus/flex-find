@@ -28,7 +28,7 @@ module Flex
 
       # You can start with a non restricted Flex::Scope object
       def scoped
-        @scoped ||= Scope.new flex.context
+        @scoped ||= Scope[:context => flex.context]
       end
 
 

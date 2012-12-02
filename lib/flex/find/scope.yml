@@ -1,0 +1,41 @@
+ANCHORS:
+  - &scope
+    query:
+      query_string:
+        query: <<query= '*' >>
+    filter:
+      and:
+        - term: <<terms= ~ >>
+        - <<_missing_fields= ~ >>
+        - <<filters= ~ >>
+    sort: <<sort= ~ >>
+
+
+
+_missing_fields:
+  missing:
+    field: <<missing>>
+
+
+
+get:
+- GET
+- /<<index>>/<<type>>/_search
+- *scope
+
+
+
+destroy:
+- DELETE
+- /<<index>>/<<type>>/_query
+- filtered:
+    <<: *scope
+
+
+
+ids:
+- GET
+- /<<index>>/<<type>>/_search
+- query:
+    terms:
+      _id: <<ids>>
