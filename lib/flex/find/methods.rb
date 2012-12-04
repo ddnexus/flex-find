@@ -28,7 +28,7 @@ module Flex
 
       # You can start with a non restricted Flex::Scope object
       def scoped
-        @scoped ||= Scope[:context => flex.context]
+        @scoped ||= Flex::Scope[:context => flex.context]
       end
 
 
@@ -52,7 +52,7 @@ module Flex
         proc = case
                when block_given?
                  block
-               when scope.is_a?(Scope)
+               when scope.is_a?(Flex::Scope)
                  lambda {scope}
                when scope.is_a?(Proc)
                  scope
@@ -63,7 +63,7 @@ module Flex
         metaclass.send(:define_method, name) do |*args|
           scope = proc.call(*args)
           raise Scope::Error, "The scope :#{name} does not return a Flex::Scope object (got #{scope.inspect})" \
-                unless scope.is_a?(Scope)
+                unless scope.is_a?(Flex::Scope)
           scope
         end
         scopes << name

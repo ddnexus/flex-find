@@ -74,14 +74,14 @@ module Flex
     # it limits the size of the query to the first document and returns it as a single document object
     def first(*vars)
       variables = params(:size => 1).deep_merge(*vars)
-      result = Find::Scope.get(variables)
+      result    = Find::Scope.get(variables)
       result.variables[:raw_result] ? result : result.first
     end
 
     # it limits the size of the query to the last document and returns it as a single document object
     def last(*vars)
       variables = params(:from => count-1, :size => 1).deep_merge(*vars)
-      result = Find::Scope.get(variables)
+      result    = Find::Scope.get(variables)
       result.variables[:raw_result] ? result : result.first
     end
 
@@ -145,7 +145,7 @@ module Flex
     end
 
     def array_value(value)
-      value.first.is_a?(Array) && value.size == 1 ? value.first : value
+      (value.first.is_a?(Array) && value.size == 1) ? value.first : value
     end
 
   end
